@@ -13,6 +13,16 @@ import AddBtnHover from './assets/icons/addBtn-hover.svg';
 import DeleteBtn from './assets/icons/deleteBtn.svg';
 import DeleteBtnHover from './assets/icons/deleteBtn-hover.svg';
 import NoTaskLine from './assets/noTask/line.svg';
+import Edit from './assets/icons/edit.svg';
+import EditHover from './assets/icons/edit-hover.svg';
+import Share from './assets/icons/share.svg';
+import ShareHover from './assets/icons/share-hover.svg';
+import Info from './assets/icons/info.svg';
+import InfoHover from './assets/icons/info-hover.svg';
+
+
+
+
 
 
 export default function App() {
@@ -27,6 +37,10 @@ export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isPressed, setIsPressed] = useState(false);
   const [isPressedDelete,setIsPressedDelete] = useState(false);
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+  const [isPressedShare,setIsPressedShare] = useState(false);
+  const [isPressedInfo,setIsPressedInfo] = useState(false);
+  const [isPressedEdit,setIsPressedEdit] = useState(false);
 
   const handleAddTask = () => {
     if (title.trim() && about.trim()) {
@@ -95,7 +109,13 @@ export default function App() {
   <FlatList
     data={tasks}
     renderItem={({ item }) => (
-      <View style={styles.taskCard}>
+      <View style={styles.taskCardWrapper}>
+        <TouchableOpacity
+        onPress={()=>{
+          setExpandedTaskId(expandedTaskId === item.id ? null : item.id)
+        }}
+        >
+        <View style={styles.taskCard}>
         <View style={styles.titleAndAbout}>
           <Text style={styles.taskTitle}>{item.title}</Text>
           <Text style={styles.taskAbout}>{item.about}</Text>
@@ -108,6 +128,35 @@ export default function App() {
           {isPressedDelete ? <DeleteBtnHover /> : <DeleteBtn />}
         </TouchableOpacity>
       </View>
+        </TouchableOpacity>
+      {expandedTaskId === item.id && (
+               <View style={styles.taskActions}>
+               <TouchableOpacity
+                onPressIn={()=>setIsPressedShare(true)}
+                onPressOut={()=>setIsPressedShare(false)}
+               >
+                {isPressedShare ? <Share />: <ShareHover />}
+               </TouchableOpacity> 
+
+               <TouchableOpacity
+                onPressIn={()=>setIsPressedInfo(true)}
+                onPressOut={()=>setIsPressedInfo(false)}
+               >
+                {isPressedInfo ? <Info />: <InfoHover />}
+               </TouchableOpacity>
+               
+               <TouchableOpacity
+                onPressIn={()=>setIsPressedEdit(true)}
+                onPressOut={()=>setIsPressedEdit(false)}
+               >
+                {isPressedEdit ? <Edit />: <EditHover />}
+               </TouchableOpacity>
+               
+             </View>
+      )}
+ 
+      </View>
+
     )}
     keyExtractor={item => item.id}
     style={styles.taskCardList}
@@ -139,10 +188,10 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'center',
     color: 'rgba(240, 227, 202, 0.64)',
-    left: '4.49%', // left percentage for positioning
-    right: '79.4%', // right percentage for positioning
-    top: '21.88%', // top percentage for positioning
-    bottom: '21.88%', // bottom percentage for positioning
+    left: '4.49%', 
+    right: '79.4%', 
+    top: '21.88%', 
+    bottom: '21.88%', 
     alignItems: 'center',
     display: 'flex',
     marginBottom: 5,
@@ -200,6 +249,19 @@ const styles = StyleSheet.create({
   width: '100%',
   height: 248,
   top: 126,
+  },
+
+  taskActions:{
+    display:'flex',
+    flexDirection:'row',
+    gap:5,
+    left:250,
+  },
+
+  taskCardWrapper:{
+    display:'flex',
+    flexDirection:'column',
+    gap:5,
   },
 
 
