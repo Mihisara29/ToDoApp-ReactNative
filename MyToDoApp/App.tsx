@@ -12,6 +12,8 @@ import AddBtn from './assets/icons/addBtn.svg';
 import AddBtnHover from './assets/icons/addBtn-hover.svg';
 import DeleteBtn from './assets/icons/deleteBtn.svg';
 import DeleteBtnHover from './assets/icons/deleteBtn-hover.svg';
+import NoTaskLine from './assets/noTask/line.svg';
+
 
 export default function App() {
   const [title, setTitle] = useState('');
@@ -50,7 +52,7 @@ export default function App() {
           <TextInput
             style={styles.input}
             placeholder="Title..."
-            placeholderTextColor="#F0E3"
+            placeholderTextColor="#F0E3CA"
             value={title}
             onChangeText={setTitle}
           />
@@ -78,30 +80,53 @@ export default function App() {
         </View>
       </View>
 
-      <FlatList
-        data={tasks}
-        renderItem={({item}) => (
-          <View style={styles.taskCard}>
-            <View style={styles.titleAndAbout}>
-            <Text style={styles.taskTitle}>{item.title}</Text>
-            <Text style={styles.taskAbout}>{item.about}</Text>
-            </View>  
-            <TouchableOpacity
-            onPressIn={()=>{setIsPressedDelete(true)}}
-            onPressOut={()=>{setIsPressedDelete(false)}}
-            onPress={() => handleDeleteTask(item.id)}
-            > {isPressedDelete ? (<DeleteBtnHover />):(<DeleteBtn />)}</TouchableOpacity>
-            
-          </View>
-        )}
-        keyExtractor={item => item.id}
-        style={styles.taskCardList}
-      />
+      {}
+      <View>
+        No Tasks
+      </View>
+
+      {tasks.length === 0 ? (
+  <View style={{ alignItems: 'center', marginTop: 150 }}>
+    <NoTaskLine width={60} height={10} />
+    <Text style={{ color: '#F0E3CA', fontSize: 20, marginVertical: 8 }}>No Tasks</Text>
+    <NoTaskLine width={60} height={10} />
+  </View>
+) : (
+  <FlatList
+    data={tasks}
+    renderItem={({ item }) => (
+      <View style={styles.taskCard}>
+        <View style={styles.titleAndAbout}>
+          <Text style={styles.taskTitle}>{item.title}</Text>
+          <Text style={styles.taskAbout}>{item.about}</Text>
+        </View>
+        <TouchableOpacity
+          onPressIn={() => setIsPressedDelete(true)}
+          onPressOut={() => setIsPressedDelete(false)}
+          onPress={() => handleDeleteTask(item.id)}
+        >
+          {isPressedDelete ? <DeleteBtnHover /> : <DeleteBtn />}
+        </TouchableOpacity>
+      </View>
+    )}
+    keyExtractor={item => item.id}
+    style={styles.taskCardList}
+  />
+)}
+
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+
+
+  container: {
+    flex: 1,
+    backgroundColor: '#242320', 
+  },
+
   input: {
     width: 267,
     backgroundColor: '#242320',
