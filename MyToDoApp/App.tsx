@@ -50,7 +50,7 @@ export default function App() {
           <TextInput
             style={styles.input}
             placeholder="Title..."
-            placeholderTextColor="#F0E3CA"
+            placeholderTextColor="#F0E3"
             value={title}
             onChangeText={setTitle}
           />
