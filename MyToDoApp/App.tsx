@@ -28,6 +28,8 @@ import Facebook from './assets/share/facebook.svg';
 import Tele from './assets/share/telegram(1).svg';
 import Shares from 'react-native-share';
 import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from 'react-native-toast-message';
+import { ToastConfig, ToastConfigParams } from 'react-native-toast-message';
 
 
 
@@ -104,6 +106,47 @@ export default function App() {
     setSelectedTask(task);
     setShareModalVisible(true);
   };
+
+  const handleCopyToClipboard = (task:Task) =>{
+    const text = `Task: ${task.title}\nAbout: ${task.about}`;
+    Clipboard.setString(text);
+    setShareModalVisible(false);
+    setSelectedTask(null);
+    Toast.show({
+      type: 'success',
+      text1: 'Copied!',
+      text2: 'Task content copied to clipboard.',
+      visibilityTime: 2000,
+      position: 'bottom',
+    });
+  }
+
+  const toastConfig : ToastConfig = {
+    success: ({ text1, text2,}:ToastConfigParams<any>) => (
+      <View style={{
+        height: 60,
+        width: '90%',
+        backgroundColor: '#1B1A17',
+        borderLeftWidth: 5,
+        borderLeftColor: '#FF8303',
+        borderRadius: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 4,
+        marginBottom: 12
+      }}>
+        <Text style={{ color: '#F0E3CA', fontWeight: 'bold', fontSize: 14 }}>{text1}</Text>
+        {text2 ? (
+          <Text style={{ color: '#F0E3CA', fontSize: 12, opacity: 0.8 }}>{text2}</Text>
+        ) : null}
+      </View>
+    ),
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -202,7 +245,7 @@ export default function App() {
                
              </View>
       )}
- 
+       <Toast />
       </View>
 
     )}
@@ -246,7 +289,9 @@ onPress={()=>setShareModalVisible(false)}
 style={styles.shareIconsContainer}>
   <View style={styles.shareicons}>
   <Pressable
-   style={styles.iconContainer}><Copy width={21} height={21} /></Pressable>
+   style={styles.iconContainer}
+   onPress={()=>{handleCopyToClipboard(selectedTask)}}
+   ><Copy width={21} height={21} /></Pressable>
   <Pressable style={styles.iconContainer}><Vk width={21} height={21} /></Pressable>
   <Pressable style={styles.iconContainer}><Tele width={21} height={21} /></Pressable>
   <Pressable style={styles.iconContainer}><Whatsapp width={21} height={21} /></Pressable>
@@ -257,8 +302,10 @@ style={styles.shareIconsContainer}>
 
 
    
+<Toast config={toastConfig} position="bottom" />
 
     </View>
+    
   );
 }
 
