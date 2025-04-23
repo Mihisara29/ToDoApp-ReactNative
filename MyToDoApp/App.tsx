@@ -21,6 +21,15 @@ import Share from './assets/icons/share.svg';
 import ShareHover from './assets/icons/share-hover.svg';
 import Info from './assets/icons/info.svg';
 import InfoHover from './assets/icons/info-hover.svg';
+import Copy from './assets/share/copy.svg';
+import Vk from './assets/share/vk.svg';
+import Whatsapp from './assets/share/whatsapp.svg';
+import Facebook from './assets/share/facebook.svg';
+import Tele from './assets/share/telegram(1).svg';
+import Shares from 'react-native-share';
+import Clipboard from '@react-native-clipboard/clipboard';
+
+
 
 
 
@@ -47,6 +56,8 @@ export default function App() {
   const[editTitle,setEditTitle] = useState('');
   const[editAbout,setEditAbout] = useState('');
   const[editingtaskId,setEditingTaskId] = useState<string | null>(null);
+  const[isshareModalVisible,setShareModalVisible] = useState(false);
+  const[selectedTask,setSelectedTask] = useState<Task|null>(null);
 
 
   const handleAddTask = () => {
@@ -87,6 +98,11 @@ export default function App() {
       setEditTitle('');
       setEditAbout('');
     }
+  };
+
+  const openShareModal = (task: Task) => {
+    setSelectedTask(task);
+    setShareModalVisible(true);
   };
 
   return (
@@ -164,6 +180,7 @@ export default function App() {
                <TouchableOpacity
                 onPressIn={()=>setIsPressedShare(true)}
                 onPressOut={()=>setIsPressedShare(false)}
+                onPress={() => openShareModal(item)}
                >
                 {isPressedShare ? <Share />: <ShareHover />}
                </TouchableOpacity> 
@@ -224,6 +241,20 @@ export default function App() {
     </View>
   </View>
 </Modal>
+{isshareModalVisible?<Pressable
+onPress={()=>setShareModalVisible(false)}
+style={styles.shareIconsContainer}>
+  <View style={styles.shareicons}>
+  <Pressable
+   style={styles.iconContainer}><Copy width={21} height={21} /></Pressable>
+  <Pressable style={styles.iconContainer}><Vk width={21} height={21} /></Pressable>
+  <Pressable style={styles.iconContainer}><Tele width={21} height={21} /></Pressable>
+  <Pressable style={styles.iconContainer}><Whatsapp width={21} height={21} /></Pressable>
+  <Pressable style={styles.iconContainer}><Facebook width={21} height={21} /></Pressable>
+  </View>
+
+</Pressable>:null}
+
 
    
 
@@ -384,5 +415,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  shareIconsContainer: {
+    position: 'absolute', 
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end', 
+    alignItems: 'center',
+    zIndex: 999,
+  },
   
+  shareicons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 18,
+    paddingVertical: 14,
+    backgroundColor: '#1B1A17',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    width: 360,
+    height: 76,
+  },
+  
+  iconContainer: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#23221F',
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  icon: {
+    width: 21,
+    height: 21,
+    tintColor: '#F0E3CA', 
+  }
 });
