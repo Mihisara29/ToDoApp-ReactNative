@@ -7,6 +7,8 @@ import {
   Touchable,
   TouchableOpacity,
   FlatList,
+  Modal,
+  Pressable,
 } from 'react-native';
 import AddBtn from './assets/icons/addBtn.svg';
 import AddBtnHover from './assets/icons/addBtn-hover.svg';
@@ -41,6 +43,11 @@ export default function App() {
   const [isPressedShare,setIsPressedShare] = useState(false);
   const [isPressedInfo,setIsPressedInfo] = useState(false);
   const [isPressedEdit,setIsPressedEdit] = useState(false);
+  const[editModalVisible,setEditModalVisible] = useState(false);
+  const[editTitle,setEditTitle] = useState('');
+  const[editAbout,setEditAbout] = useState('');
+  const[editingtaskId,setEditingTaskId] = useState<string | null>(null);
+
 
   const handleAddTask = () => {
     if (title.trim() && about.trim()) {
@@ -58,6 +65,29 @@ export default function App() {
   const handleDeleteTask = (id:string) =>{
     setTasks(tasks.filter(task => task.id !== id));
   }
+
+  const openEditModal = (task: Task) => {
+    setEditTitle(task.title);
+    setEditAbout(task.about);
+    setEditingTaskId(task.id);
+    setEditModalVisible(true);
+
+  }
+
+  const handleSaveEdit = () => {
+    if (editingtaskId) {
+      const updatedTasks = tasks.map(task =>
+        task.id === editingtaskId
+          ? { ...task, title: editTitle, about: editAbout }
+          : task
+      );
+      setTasks(updatedTasks);
+      setEditModalVisible(false);
+      setEditingTaskId(null);
+      setEditTitle('');
+      setEditAbout('');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -148,6 +178,7 @@ export default function App() {
                <TouchableOpacity
                 onPressIn={()=>setIsPressedEdit(true)}
                 onPressOut={()=>setIsPressedEdit(false)}
+                onPress={()=> openEditModal(item)}
                >
                 {isPressedEdit ? <Edit />: <EditHover />}
                </TouchableOpacity>
@@ -162,7 +193,39 @@ export default function App() {
     style={styles.taskCardList}
   />
 )}
+<Modal visible={editModalVisible} transparent animationType="slide">
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <TextInput
+        style={styles.editingTitle}
+        placeholder='Edit title...'
+        placeholderTextColor="#F0E3CA"
+        value={editTitle}
+        onChangeText={setEditTitle}
+      />
+      <TextInput
+        style={styles.editingAbout}
+        placeholder='Edit about...'
+        placeholderTextColor="#F0E3CA"
+        multiline
+        value={editAbout}
+        onChangeText={setEditAbout}
+      />
+      <View style={styles.buttonRow}>
+      <Pressable style={styles.modalButton} onPress={() => setEditModalVisible(false)}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </Pressable>
+        <Pressable style={styles.modalButton}
+        onPress={handleSaveEdit}
+        >
+          <Text style={styles.buttonText}>Save</Text>
+        </Pressable>
+      </View>
+    </View>
+  </View>
+</Modal>
 
+   
 
     </View>
   );
@@ -247,7 +310,6 @@ const styles = StyleSheet.create({
   gap: 16,
   position: 'absolute',
   width: '100%',
-  height: 248,
   top: 126,
   },
 
@@ -264,6 +326,63 @@ const styles = StyleSheet.create({
     gap:5,
   },
 
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    
+  },
+  modalContainer: {
+    width: 360,
+    backgroundColor: '#1B1A17',
+    borderRadius: 8,
+    padding: 18,
+    top:200
+  },
+  editingTitle: {
+    backgroundColor: '#242320',
+    borderColor: '#A35709',
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 10,
+    color: '#F0E3CA',
+    fontSize: 14,
+    marginBottom: 8,
+    textAlignVertical: 'top',
+  },
+  editingAbout: {
+    backgroundColor: '#242320',
+    borderColor: '#A35709',
+    borderWidth: 1,
+    borderRadius: 4,
+    height: 250,
+    paddingHorizontal: 10,
+    color: '#F0E3CA',
+    fontSize: 14,
+    marginBottom: 12,
+    textAlignVertical: 'top',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    alignSelf:'center',
+    gap: 12,
+  },
+  modalButton: {
+    width: 64,
+    height: 24,
+    backgroundColor: '#242320',
+    borderColor: '#A35709',
+    borderWidth: 1,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#D9D9D9',
+    fontSize: 10,
+    textAlign: 'center',
+  },
 
   
 });
