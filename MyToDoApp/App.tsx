@@ -26,10 +26,13 @@ import Vk from './assets/share/vk.svg';
 import Whatsapp from './assets/share/whatsapp.svg';
 import Facebook from './assets/share/facebook.svg';
 import Tele from './assets/share/telegram(1).svg';
-import Shares from 'react-native-share';
+import ShareLib, { Social,ShareSingleOptions} from 'react-native-share';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
 import { ToastConfig, ToastConfigParams } from 'react-native-toast-message';
+import { Dimensions } from 'react-native';
+import { Linking, Platform, Alert } from 'react-native';
+
 
 
 
@@ -146,7 +149,85 @@ export default function App() {
       </View>
     ),
   };
+
+;
+
+
+const shareToFacebook = async (task: Task) => {
   
+  const webUrl = `https://www.facebook.com/sharer/sharer.php?u=https://getmytodoapp.com&quote=${encodeURIComponent(task.title + '\n' + task.about)}`;
+
+  
+  const fbUrl = Platform.select({
+    android: 'fb://facewebmodal/f?href=', 
+    ios: 'fb://profile', 
+  });
+
+
+  try {
+    const canOpen = await Linking.canOpenURL(fbUrl!);
+
+    if (canOpen) {
+      Linking.openURL(`${fbUrl}${encodeURIComponent(webUrl)}`);
+    } else {
+
+      Linking.openURL(webUrl);
+    }
+  } catch (error) {
+    console.error('Error opening Facebook:', error);
+  }
+};
+
+const shareToWhatsApp = async (task: Task) => {
+  const message = `${task.title}\n\n${task.about}`;
+  const encodedMessage = encodeURIComponent(message);
+  const url = `whatsapp://send?text=${encodedMessage}`;
+
+  try {
+    const canOpen = await Linking.canOpenURL(url);
+
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      const webUrl = `https://wa.me/?text=${encodedMessage}`;
+      Linking.openURL(webUrl);
+    }
+  } catch (error) {
+    console.error('Error sharing to WhatsApp:', error);
+  }
+}; 
+
+const shareToTelegram = async (task: Task) => {
+  const message = `${task.title}\n\n${task.about}`;
+  const encodedMessage = encodeURIComponent(message);
+  const url = `tg://msg?text=${encodedMessage}`;
+
+  try {
+    const canOpen = await Linking.canOpenURL(url);
+
+    if (canOpen) {
+      Linking.openURL(url);
+    } else {
+      const webUrl = `https://t.me/share/url?url=&text=${encodedMessage}`;
+      Linking.openURL(webUrl);
+    }
+  } catch (error) {
+    console.error('Error sharing to Telegram:', error);
+  }
+};
+
+const shareToVK = async (task: Task) => {
+  const message = `${task.title}\n\n${task.about}`;
+  const encodedMessage = encodeURIComponent(message);
+
+  const vkUrl = `https://vk.com/share.php?comment=${encodedMessage}`;
+
+  try {
+    await Linking.openURL(vkUrl);
+  } catch (error) {
+    console.error('Error sharing to VK:', error);
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -245,7 +326,7 @@ export default function App() {
                
              </View>
       )}
-       <Toast />
+      
       </View>
 
     )}
@@ -289,13 +370,51 @@ onPress={()=>setShareModalVisible(false)}
 style={styles.shareIconsContainer}>
   <View style={styles.shareicons}>
   <Pressable
-   style={styles.iconContainer}
-   onPress={()=>{handleCopyToClipboard(selectedTask)}}
+   style={({ pressed }) => [
+    styles.iconContainer,
+    { opacity: pressed ? 0.5 : 1 },
+  ]}
+   onPress={()=>{
+    if(selectedTask)
+    handleCopyToClipboard(selectedTask)
+  }}
    ><Copy width={21} height={21} /></Pressable>
-  <Pressable style={styles.iconContainer}><Vk width={21} height={21} /></Pressable>
-  <Pressable style={styles.iconContainer}><Tele width={21} height={21} /></Pressable>
-  <Pressable style={styles.iconContainer}><Whatsapp width={21} height={21} /></Pressable>
-  <Pressable style={styles.iconContainer}><Facebook width={21} height={21} /></Pressable>
+  <Pressable   style={({ pressed }) => [
+    styles.iconContainer,
+    { opacity: pressed ? 0.5 : 1 },
+  ]}
+   onPress={() =>{
+    if(selectedTask)
+    shareToVK(selectedTask)  
+   }}
+  ><Vk width={21} height={21} /></Pressable>
+  <Pressable style={({ pressed }) => [
+    styles.iconContainer,
+    { opacity: pressed ? 0.5 : 1 },
+  ]}
+    onPress={() =>{
+      if(selectedTask)
+      shareToTelegram(selectedTask)  
+   }}
+  ><Tele width={21} height={21} /></Pressable>
+  <Pressable style={({ pressed }) => [
+    styles.iconContainer,
+    { opacity: pressed ? 0.5 : 1 },
+  ]}
+   onPress={() =>{
+      if(selectedTask)
+      shareToWhatsApp(selectedTask)  
+   }}
+  ><Whatsapp width={21} height={21} /></Pressable>
+  <Pressable style={({ pressed }) => [
+    styles.iconContainer,
+    { opacity: pressed ? 0.5 : 1 },
+  ]}
+    onPress={() =>{
+      if(selectedTask)
+      shareToFacebook(selectedTask)
+    }}
+  ><Facebook width={21} height={21} /></Pressable>
   </View>
 
 </Pressable>:null}
@@ -310,15 +429,29 @@ style={styles.shareIconsContainer}>
 }
 
 const styles = StyleSheet.create({
-
-
   container: {
     flex: 1,
-    backgroundColor: '#242320', 
+    backgroundColor: '#242320',
+    paddingHorizontal: 16,
+    paddingTop: 32,
   },
 
+  inputPartsAndAddButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+   
+  },
+
+  inputParts:{
+
+    flex:1,
+    
+
+  },
+  
   input: {
-    width: 267,
     backgroundColor: '#242320',
     borderColor: '#FF8303',
     borderWidth: 2,
@@ -329,29 +462,25 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'center',
     color: 'rgba(240, 227, 202, 0.64)',
-    left: '4.49%', 
-    right: '79.4%', 
-    top: '21.88%', 
-    bottom: '21.88%', 
-    alignItems: 'center',
-    display: 'flex',
-    marginBottom: 5,
+    paddingVertical: 8,
+    marginRight: 12,
+    marginBottom:5,
   },
+  
+  
 
-  inputPartsAndAddButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 0,
-    gap: 18,
-    width: 345,
-    height: 70,
-    left: 23,
-    top: 23,
-  },
 
   addBtn: {
-    marginTop: 25,
+    marginBottom:5,
+  },
+
+  taskCardList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
+    width: '100%',
+    marginTop: 20,
+    paddingHorizontal: 16,
   },
 
   taskCard: {
@@ -360,64 +489,56 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderRadius: 8,
     padding: 12,
-    marginVertical: 6,
-    marginHorizontal: 24,
-    display:'flex',
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  
+
+  taskCardWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 5,
+    flex: 1,
+  },
+
   taskTitle: {
     color: '#F0E3CA',
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 4,
   },
-  
+
   taskAbout: {
     color: '#F0E3CA',
     fontSize: 14,
     opacity: 1,
   },
 
-  taskCardList: {
-  display:'flex',
-  flexDirection:'column',
-  padding: 0,
-  gap: 16,
-  position: 'absolute',
-  width: '100%',
-  top: 126,
+  taskActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: 5,
   },
-
-  taskActions:{
-    display:'flex',
-    flexDirection:'row',
-    gap:5,
-    left:250,
-  },
-
-  taskCardWrapper:{
-    display:'flex',
-    flexDirection:'column',
-    gap:5,
-  },
+  
 
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     
   },
+
   modalContainer: {
-    width: 360,
+    width: '90%',
     backgroundColor: '#1B1A17',
     borderRadius: 8,
     padding: 18,
-    top:200
+    
   },
+
   editingTitle: {
     backgroundColor: '#242320',
     borderColor: '#A35709',
@@ -429,6 +550,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlignVertical: 'top',
   },
+
   editingAbout: {
     backgroundColor: '#242320',
     borderColor: '#A35709',
@@ -441,11 +563,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     textAlignVertical: 'top',
   },
+
   buttonRow: {
     flexDirection: 'row',
-    alignSelf:'center',
+    alignSelf: 'center',
     gap: 12,
   },
+
   modalButton: {
     width: 64,
     height: 24,
@@ -456,6 +580,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   buttonText: {
     color: '#D9D9D9',
     fontSize: 10,
@@ -463,17 +588,17 @@ const styles = StyleSheet.create({
   },
 
   shareIconsContainer: {
-    position: 'absolute', 
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end', 
+    justifyContent: 'flex-end',
     alignItems: 'center',
     zIndex: 999,
   },
-  
+
   shareicons: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -483,10 +608,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#1B1A17',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-    width: 360,
+    width: '100%',
+    maxWidth: 360,
     height: 76,
   },
-  
+
   iconContainer: {
     width: 48,
     height: 48,
@@ -496,9 +622,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
   },
+
   icon: {
     width: 21,
     height: 21,
-    tintColor: '#F0E3CA', 
-  }
+    tintColor: '#F0E3CA',
+  },
 });
+
