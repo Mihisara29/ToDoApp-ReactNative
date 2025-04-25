@@ -321,7 +321,6 @@ useEffect(()=>{
         </View>
       </View>
 
-      {}
       <View>
         No Tasks
       </View>
@@ -344,8 +343,19 @@ useEffect(()=>{
         >
         <View style={styles.taskCard}>
         <View style={styles.titleAndAbout}>
-          <Text style={styles.taskTitle}>{item.title}</Text>
-          <Text style={styles.taskAbout}>{item.about}</Text>
+        <Text style={[styles.taskTitle, item.isCompleted && { textDecorationLine: 'line-through', color: 'gray' }]}>
+        {item.title}
+        </Text>
+
+        <Text style={[
+        styles.taskAbout, 
+        item.isCompleted && { 
+        textDecorationLine: 'line-through', 
+        color: 'gray' 
+       }
+       ]}>
+    {item.about}
+  </Text>
         </View>
         <View style={styles.taskCardButtonWrapper}>
         <TouchableOpacity
