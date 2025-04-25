@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -32,6 +32,7 @@ import Toast from 'react-native-toast-message';
 import { ToastConfig, ToastConfigParams } from 'react-native-toast-message';
 import { Dimensions } from 'react-native';
 import { Linking, Platform, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -67,6 +68,14 @@ export default function App() {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
+const saveTasks = async (tasks: Task[]) => {
+  try {
+    await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
+  } catch (error) {
+    console.error('Failed to save tasks:', error);
+  }
+};
+
 
   const handleAddTask = () => {
     if (title.trim() && about.trim()) {
@@ -76,7 +85,9 @@ const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
         about: about.trim(),
         isCompleted:false,
       };
-      setTasks([...tasks, newTask]);
+    const updatedTask = [...tasks,newTask]  
+      setTasks(updatedTask);
+      saveTasks(updatedTask);
       setTitle('');
       setAbout('');
     }
@@ -88,6 +99,7 @@ const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
       t => t.id === task.id ? {...t,isCompleted: !t.isCompleted} : t
     );
     setTasks(updatedTasks);
+    saveTasks(updatedTasks);
   };
 
   const confirmDelete = (id: string) => {
@@ -104,7 +116,9 @@ const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
   };
 
   const handleDeleteTask = (id:string) =>{
-    setTasks(tasks.filter(task => task.id !== id));
+    const updatedTask = tasks.filter(task => task.id !== id);
+    setTasks(updatedTask);
+    saveTasks(updatedTask);
   }
 
   const openEditModal = (task: Task) => {
@@ -123,6 +137,7 @@ const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
           : task
       );
       setTasks(updatedTasks);
+      saveTasks(updatedTasks);
       setEditModalVisible(false);
       setEditingTaskId(null);
       setEditTitle('');
@@ -253,6 +268,23 @@ const shareToVK = async (task: Task) => {
     console.error('Error sharing to VK:', error);
   }
 };
+
+useEffect(()=>{
+
+ const loadTasks = async() => {
+    try{
+      const savedTasks = await AsyncStorage.getItem('tasks');
+      if(savedTasks){
+        setTasks(JSON.parse(savedTasks));
+      }
+    }catch(error){
+      console.error('Failed to load tasks',error);
+    }
+ };
+
+ loadTasks();
+
+},[])
 
   return (
     <View style={styles.container}>
