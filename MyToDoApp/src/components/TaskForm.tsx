@@ -5,7 +5,7 @@ import AddBtn from '../assets/icons/addBtn.svg';
 import AddBtnHover from '../assets/icons/addBtn-hover.svg';
 import { StyleSheet } from 'react-native';
 
-
+//the code for add inputs
 export const TaskForm = () => {
   const [title, setTitle] = useState('');
   const [about, setAbout] = useState('');
@@ -26,23 +26,31 @@ export const TaskForm = () => {
         <TextInput
           style={styles.input}
           placeholder="Title..."
+          placeholderTextColor="#F0E3CA"
           value={title}
           onChangeText={setTitle}
         />
         <TextInput
           style={styles.input}
           placeholder="About..."
+          placeholderTextColor="#F0E3CA"
           value={about}
           onChangeText={setAbout}
         />
       </View>
-      <TouchableOpacity
-        onPress={handleAddTask}
-        onPressIn={() => setIsPressed(true)}
-        onPressOut={() => setIsPressed(false)}
-      >
-        {isPressed ? <AddBtnHover /> : <AddBtn />}
-      </TouchableOpacity>
+      <View style={styles.addBtn}>
+          <TouchableOpacity
+            onPress={handleAddTask}
+            onPressIn={() => setIsPressed(true)}
+            onPressOut={() => setIsPressed(false)}
+            >
+            {isPressed ? (
+              <AddBtnHover height={90} width={90} />
+            ) : (
+              <AddBtn height={90} width={90} />
+            )}
+          </TouchableOpacity>
+        </View>
     </View>
   );
 };

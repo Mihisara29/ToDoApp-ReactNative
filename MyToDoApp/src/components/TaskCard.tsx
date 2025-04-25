@@ -11,9 +11,6 @@ import InfoHover from '../assets/icons/info-hover.svg';
 import Edit from '../assets/icons/edit.svg';
 import EditHover from '../assets/icons/edit-hover.svg';
 
-import {DeleteModal} from './DeleteModal';
-import {ShareModal} from './ShareModal';
-import {EditModal} from './EditModal';
 
 interface Task {
   id: string;
@@ -34,11 +31,14 @@ export const TaskCard = ({task}: TaskCardProps) => {
   const [isPressedInfo, setIsPressedInfo] = useState(false);
   const [isPressedEdit, setIsPressedEdit] = useState(false);
   
+  // The code for task card
   const {
     setDeleteModalVisible,
     setSelectedTaskId,
     setEditModalVisible,
     setShareModalVisible,
+    toggleComplete,
+    setInfoModelVisible
   } = useTasks();
 
   return (
@@ -84,7 +84,7 @@ export const TaskCard = ({task}: TaskCardProps) => {
             <Pressable
               style={({pressed}) => [{opacity: pressed ? 0.5 : 1}]}
               onPress={() => {
-                handleIsCompleted;
+                toggleComplete(task.id);
               }}>
               {task.isCompleted ? (
                 <Text style={styles.isCompleteIcon}>Done</Text>
@@ -108,7 +108,11 @@ export const TaskCard = ({task}: TaskCardProps) => {
 
           <TouchableOpacity
             onPressIn={() => setIsPressedInfo(true)}
-            onPressOut={() => setIsPressedInfo(false)}>
+            onPressOut={() => setIsPressedInfo(false)}
+            onPress={()=>{setSelectedTaskId(task.id);
+              setInfoModelVisible(true);
+            }}
+            >
             {isPressedInfo ? <Info /> : <InfoHover />}
           </TouchableOpacity>
 
@@ -133,6 +137,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    width:'100%',
   },
 
   taskCard: {
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
   },
 
   titleAndAbout: {
-    maxWidth: '60%',
+    maxWidth: '62%',
   },
 
   taskTitle: {

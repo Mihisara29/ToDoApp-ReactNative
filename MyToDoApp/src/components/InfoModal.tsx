@@ -37,6 +37,7 @@ export const InfoModal = () => {
   };
 
   return (
+    //popup massage for info
     <Modal
       visible={isInfoModelVisble}
       transparent={true}

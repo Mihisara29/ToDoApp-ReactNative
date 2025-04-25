@@ -4,6 +4,7 @@ import { TaskCard } from './TaskCard';
 import NoTaskLine from '../assets/noTask/line.svg';
 import { StyleSheet } from 'react-native';
 
+//the code for list tasks
 
 export const TaskList = () => {
   const { tasks } = useTasks();

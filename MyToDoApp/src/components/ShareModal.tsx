@@ -16,6 +16,7 @@ import Vk from '../assets/share/vk.svg';
 import Tele from '../assets/share/telegram(1).svg';
 import Whatsapp from '../assets/share/whatsapp.svg';
 import Facebook from '../assets/share/facebook.svg';
+import { ToastConfig, ToastConfigParams } from 'react-native-toast-message';
 
 export const ShareModal = () => {
   const { 
@@ -27,10 +28,10 @@ export const ShareModal = () => {
 
   const taskToShare = tasks.find(task => task.id === selectedTaskId);
 
-  const handleCopyToClipboard = () => {
-    if (!taskToShare) return;
-    
-    const text = `Task: ${taskToShare.title}\nAbout: ${taskToShare.about}`;
+  //function for copy to clipboard
+  const handleCopyToClipboard = () =>{
+    if(taskToShare){
+      const text = `Task: ${taskToShare?.title}\nAbout: ${taskToShare?.about}`;
     Clipboard.setString(text);
     setShareModalVisible(false);
     Toast.show({
@@ -40,8 +41,12 @@ export const ShareModal = () => {
       visibilityTime: 2000,
       position: 'bottom',
     });
-  };
+    }
+  }
 
+ 
+
+//function for share in VK.
   const shareToVK = async () => {
     if (!taskToShare) return;
     
@@ -57,6 +62,7 @@ export const ShareModal = () => {
     }
   };
 
+  //function for share in facebook
   const shareToFacebook = async () => {
     if (!taskToShare) return;
     
@@ -83,6 +89,7 @@ export const ShareModal = () => {
     }
   };
 
+  //function for share in whatsapp
   const shareToWhatsApp = async () => {
     if (!taskToShare) return;
     
@@ -105,6 +112,7 @@ export const ShareModal = () => {
     }
   };
 
+  // function for share in telegram
   const shareToTelegram = async () => {
     if (!taskToShare) return;
     
@@ -128,6 +136,7 @@ export const ShareModal = () => {
   };
 
   return (
+    //when press the share icon of thask share icons is appeared
     <Modal visible={isShareModalVisible} transparent animationType="slide">
       <Pressable
         onPress={() => setShareModalVisible(false)}

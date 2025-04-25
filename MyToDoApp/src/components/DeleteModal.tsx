@@ -11,6 +11,7 @@ export const DeleteModal = () => {
     selectedTaskId
   } = useTasks();
 
+  //Function formthe delete the task
   const handleDeleteTask = () => {
     if(selectedTaskId){
       deleteTask(selectedTaskId); 
@@ -19,6 +20,7 @@ export const DeleteModal = () => {
   };
 
   return (
+    //Popup delete massage
     <Modal visible={isDeleteModalVisible} transparent animationType="fade">
       <View style={styles.deletemodalOverlay}>
         <View style={styles.deleteModalContainer}>

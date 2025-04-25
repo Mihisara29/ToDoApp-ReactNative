@@ -25,7 +25,8 @@ export const EditModal = () => {
       setAbout(editingTask.about);
     }
   }, [editingTask]);
-
+  
+  //Function for the save edit-task
   const handleSave = () => {
     if (selectedTaskId) {
       editTask(selectedTaskId, title, about);
@@ -34,6 +35,7 @@ export const EditModal = () => {
   };
 
   return (
+    //popup massage for editing
     <Modal visible={isEditModalVisible} transparent animationType="slide">
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
@@ -78,7 +80,7 @@ export const EditModal = () => {
   );
 };
 
-// ... (keep your existing styles)
+
 const styles = StyleSheet.create({
 
   modalOverlay: {
