@@ -26,21 +26,13 @@ import Vk from './assets/share/vk.svg';
 import Whatsapp from './assets/share/whatsapp.svg';
 import Facebook from './assets/share/facebook.svg';
 import Tele from './assets/share/telegram(1).svg';
-import ShareLib, { Social,ShareSingleOptions} from 'react-native-share';
+import ShareLib, {Social, ShareSingleOptions} from 'react-native-share';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
-import { ToastConfig, ToastConfigParams } from 'react-native-toast-message';
-import { Dimensions } from 'react-native';
-import { Linking, Platform, Alert } from 'react-native';
+import {ToastConfig, ToastConfigParams} from 'react-native-toast-message';
+import {Dimensions} from 'react-native';
+import {Linking, Platform, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-
-
-
-
-
-
 
 export default function App() {
   const [title, setTitle] = useState('');
@@ -50,32 +42,31 @@ export default function App() {
     id: string;
     title: string;
     about: string;
-    isCompleted:boolean;
+    isCompleted: boolean;
   };
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isPressed, setIsPressed] = useState(false);
-  const [isPressedDelete,setIsPressedDelete] = useState(false);
+  const [isPressedDelete, setIsPressedDelete] = useState(false);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
-  const [isPressedShare,setIsPressedShare] = useState(false);
-  const [isPressedInfo,setIsPressedInfo] = useState(false);
-  const [isPressedEdit,setIsPressedEdit] = useState(false);
-  const[editModalVisible,setEditModalVisible] = useState(false);
-  const[editTitle,setEditTitle] = useState('');
-  const[editAbout,setEditAbout] = useState('');
-  const[editingtaskId,setEditingTaskId] = useState<string | null>(null);
-  const[isshareModalVisible,setShareModalVisible] = useState(false);
-  const[selectedTask,setSelectedTask] = useState<Task|null>(null);
+  const [isPressedShare, setIsPressedShare] = useState(false);
+  const [isPressedInfo, setIsPressedInfo] = useState(false);
+  const [isPressedEdit, setIsPressedEdit] = useState(false);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editAbout, setEditAbout] = useState('');
+  const [editingtaskId, setEditingTaskId] = useState<string | null>(null);
+  const [isshareModalVisible, setShareModalVisible] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<string | null>(null);
 
-const saveTasks = async (tasks: Task[]) => {
-  try {
-    await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
-  } catch (error) {
-    console.error('Failed to save tasks:', error);
-  }
-};
-
+  const saveTasks = async (tasks: Task[]) => {
+    try {
+      await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
+    } catch (error) {
+      console.error('Failed to save tasks:', error);
+    }
+  };
 
   const handleAddTask = () => {
     if (title.trim() && about.trim()) {
@@ -83,9 +74,9 @@ const saveTasks = async (tasks: Task[]) => {
         id: Date.now().toString(),
         title: title.trim(),
         about: about.trim(),
-        isCompleted:false,
+        isCompleted: false,
       };
-    const updatedTask = [...tasks,newTask]  
+      const updatedTask = [...tasks, newTask];
       setTasks(updatedTask);
       saveTasks(updatedTask);
       setTitle('');
@@ -93,10 +84,9 @@ const saveTasks = async (tasks: Task[]) => {
     }
   };
 
-
-  const handleIsComplete = (task:Task) => {
-    const updatedTasks = tasks.map(
-      t => t.id === task.id ? {...t,isCompleted: !t.isCompleted} : t
+  const handleIsComplete = (task: Task) => {
+    const updatedTasks = tasks.map(t =>
+      t.id === task.id ? {...t, isCompleted: !t.isCompleted} : t,
     );
     setTasks(updatedTasks);
     saveTasks(updatedTasks);
@@ -115,26 +105,25 @@ const saveTasks = async (tasks: Task[]) => {
     }
   };
 
-  const handleDeleteTask = (id:string) =>{
+  const handleDeleteTask = (id: string) => {
     const updatedTask = tasks.filter(task => task.id !== id);
     setTasks(updatedTask);
     saveTasks(updatedTask);
-  }
+  };
 
   const openEditModal = (task: Task) => {
     setEditTitle(task.title);
     setEditAbout(task.about);
     setEditingTaskId(task.id);
     setEditModalVisible(true);
-
-  }
+  };
 
   const handleSaveEdit = () => {
     if (editingtaskId) {
       const updatedTasks = tasks.map(task =>
         task.id === editingtaskId
-          ? { ...task, title: editTitle, about: editAbout }
-          : task
+          ? {...task, title: editTitle, about: editAbout}
+          : task,
       );
       setTasks(updatedTasks);
       saveTasks(updatedTasks);
@@ -150,7 +139,7 @@ const saveTasks = async (tasks: Task[]) => {
     setShareModalVisible(true);
   };
 
-  const handleCopyToClipboard = (task:Task) =>{
+  const handleCopyToClipboard = (task: Task) => {
     const text = `Task: ${task.title}\nAbout: ${task.about}`;
     Clipboard.setString(text);
     setShareModalVisible(false);
@@ -162,129 +151,127 @@ const saveTasks = async (tasks: Task[]) => {
       visibilityTime: 2000,
       position: 'bottom',
     });
-  }
+  };
 
-  const toastConfig : ToastConfig = {
-    success: ({ text1, text2,}:ToastConfigParams<any>) => (
-      <View style={{
-        height: 60,
-        width: '90%',
-        backgroundColor: '#1B1A17',
-        borderLeftWidth: 5,
-        borderLeftColor: '#FF8303',
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 4,
-        marginBottom: 12
-      }}>
-        <Text style={{ color: '#F0E3CA', fontWeight: 'bold', fontSize: 14 }}>{text1}</Text>
+  const toastConfig: ToastConfig = {
+    success: ({text1, text2}: ToastConfigParams<any>) => (
+      <View
+        style={{
+          height: 60,
+          width: '90%',
+          backgroundColor: '#1B1A17',
+          borderLeftWidth: 5,
+          borderLeftColor: '#FF8303',
+          borderRadius: 8,
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          justifyContent: 'center',
+          shadowColor: '#000',
+          shadowOpacity: 0.3,
+          shadowRadius: 6,
+          elevation: 4,
+          marginBottom: 12,
+        }}>
+        <Text style={{color: '#F0E3CA', fontWeight: 'bold', fontSize: 14}}>
+          {text1}
+        </Text>
         {text2 ? (
-          <Text style={{ color: '#F0E3CA', fontSize: 12, opacity: 0.8 }}>{text2}</Text>
+          <Text style={{color: '#F0E3CA', fontSize: 12, opacity: 0.8}}>
+            {text2}
+          </Text>
         ) : null}
       </View>
     ),
   };
 
-;
+  const shareToFacebook = async (task: Task) => {
+    const webUrl = `https://www.facebook.com/sharer/sharer.php?u=https://getmytodoapp.com&quote=${encodeURIComponent(
+      task.title + '\n' + task.about,
+    )}`;
 
+    const fbUrl = Platform.select({
+      android: 'fb://facewebmodal/f?href=',
+      ios: 'fb://profile',
+    });
 
-const shareToFacebook = async (task: Task) => {
-  
-  const webUrl = `https://www.facebook.com/sharer/sharer.php?u=https://getmytodoapp.com&quote=${encodeURIComponent(task.title + '\n' + task.about)}`;
+    try {
+      const canOpen = await Linking.canOpenURL(fbUrl!);
 
-  
-  const fbUrl = Platform.select({
-    android: 'fb://facewebmodal/f?href=', 
-    ios: 'fb://profile', 
-  });
-
-
-  try {
-    const canOpen = await Linking.canOpenURL(fbUrl!);
-
-    if (canOpen) {
-      Linking.openURL(`${fbUrl}${encodeURIComponent(webUrl)}`);
-    } else {
-
-      Linking.openURL(webUrl);
-    }
-  } catch (error) {
-    console.error('Error opening Facebook:', error);
-  }
-};
-
-const shareToWhatsApp = async (task: Task) => {
-  const message = `${task.title}\n\n${task.about}`;
-  const encodedMessage = encodeURIComponent(message);
-  const url = `whatsapp://send?text=${encodedMessage}`;
-
-  try {
-    const canOpen = await Linking.canOpenURL(url);
-
-    if (canOpen) {
-      Linking.openURL(url);
-    } else {
-      const webUrl = `https://wa.me/?text=${encodedMessage}`;
-      Linking.openURL(webUrl);
-    }
-  } catch (error) {
-    console.error('Error sharing to WhatsApp:', error);
-  }
-}; 
-
-const shareToTelegram = async (task: Task) => {
-  const message = `${task.title}\n\n${task.about}`;
-  const encodedMessage = encodeURIComponent(message);
-  const url = `tg://msg?text=${encodedMessage}`;
-
-  try {
-    const canOpen = await Linking.canOpenURL(url);
-
-    if (canOpen) {
-      Linking.openURL(url);
-    } else {
-      const webUrl = `https://t.me/share/url?url=&text=${encodedMessage}`;
-      Linking.openURL(webUrl);
-    }
-  } catch (error) {
-    console.error('Error sharing to Telegram:', error);
-  }
-};
-
-const shareToVK = async (task: Task) => {
-  const message = `${task.title}\n\n${task.about}`;
-  const encodedMessage = encodeURIComponent(message);
-
-  const vkUrl = `https://vk.com/share.php?comment=${encodedMessage}`;
-
-  try {
-    await Linking.openURL(vkUrl);
-  } catch (error) {
-    console.error('Error sharing to VK:', error);
-  }
-};
-
-useEffect(()=>{
-
- const loadTasks = async() => {
-    try{
-      const savedTasks = await AsyncStorage.getItem('tasks');
-      if(savedTasks){
-        setTasks(JSON.parse(savedTasks));
+      if (canOpen) {
+        Linking.openURL(`${fbUrl}${encodeURIComponent(webUrl)}`);
+      } else {
+        Linking.openURL(webUrl);
       }
-    }catch(error){
-      console.error('Failed to load tasks',error);
+    } catch (error) {
+      console.error('Error opening Facebook:', error);
     }
- };
+  };
 
- loadTasks();
+  const shareToWhatsApp = async (task: Task) => {
+    const message = `${task.title}\n\n${task.about}`;
+    const encodedMessage = encodeURIComponent(message);
+    const url = `whatsapp://send?text=${encodedMessage}`;
 
-},[])
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+
+      if (canOpen) {
+        Linking.openURL(url);
+      } else {
+        const webUrl = `https://wa.me/?text=${encodedMessage}`;
+        Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      console.error('Error sharing to WhatsApp:', error);
+    }
+  };
+
+  const shareToTelegram = async (task: Task) => {
+    const message = `${task.title}\n\n${task.about}`;
+    const encodedMessage = encodeURIComponent(message);
+    const url = `tg://msg?text=${encodedMessage}`;
+
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+
+      if (canOpen) {
+        Linking.openURL(url);
+      } else {
+        const webUrl = `https://t.me/share/url?url=&text=${encodedMessage}`;
+        Linking.openURL(webUrl);
+      }
+    } catch (error) {
+      console.error('Error sharing to Telegram:', error);
+    }
+  };
+
+  const shareToVK = async (task: Task) => {
+    const message = `${task.title}\n\n${task.about}`;
+    const encodedMessage = encodeURIComponent(message);
+
+    const vkUrl = `https://vk.com/share.php?comment=${encodedMessage}`;
+
+    try {
+      await Linking.openURL(vkUrl);
+    } catch (error) {
+      console.error('Error sharing to VK:', error);
+    }
+  };
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const savedTasks = await AsyncStorage.getItem('tasks');
+        if (savedTasks) {
+          setTasks(JSON.parse(savedTasks));
+        }
+      } catch (error) {
+        console.error('Failed to load tasks', error);
+      }
+    };
+
+    loadTasks();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -310,8 +297,7 @@ useEffect(()=>{
           <TouchableOpacity
             onPress={handleAddTask}
             onPressIn={() => setIsPressed(true)}
-            onPressOut={() => setIsPressed(false)}
-            >
+            onPressOut={() => setIsPressed(false)}>
             {isPressed ? (
               <AddBtnHover height={90} width={90} />
             ) : (
@@ -321,221 +307,222 @@ useEffect(()=>{
         </View>
       </View>
 
-      <View>
-        No Tasks
-      </View>
+      <View>No Tasks</View>
 
       {tasks.length === 0 ? (
-  <View style={{ alignItems: 'center', marginTop: 150 }}>
-    <NoTaskLine width={60} height={10} />
-    <Text style={{ color: '#F0E3CA', fontSize: 20, marginVertical: 8 }}>No Tasks</Text>
-    <NoTaskLine width={60} height={10} />
-  </View>
-) : (
-  <FlatList
-    data={tasks}
-    renderItem={({ item }) => (
-      <View style={styles.taskCardWrapper}>
-        <TouchableOpacity
-        onPress={()=>{
-          setExpandedTaskId(expandedTaskId === item.id ? null : item.id)
-        }}
-        >
-        <View style={styles.taskCard}>
-        <View style={styles.titleAndAbout}>
-        <Text style={[styles.taskTitle, item.isCompleted && { textDecorationLine: 'line-through', color: 'gray' }]}>
-        {item.title}
-        </Text>
-
-        <Text style={[
-        styles.taskAbout, 
-        item.isCompleted && { 
-        textDecorationLine: 'line-through', 
-        color: 'gray' 
-       }
-       ]}>
-    {item.about}
-  </Text>
+        <View style={{alignItems: 'center', marginTop: 150}}>
+          <NoTaskLine width={60} height={10} />
+          <Text style={{color: '#F0E3CA', fontSize: 20, marginVertical: 8}}>
+            No Tasks
+          </Text>
+          <NoTaskLine width={60} height={10} />
         </View>
-        <View style={styles.taskCardButtonWrapper}>
-        <TouchableOpacity
-          onPressIn={() => setIsPressedDelete(true)}
-          onPressOut={() => setIsPressedDelete(false)}
-          onPress={() => confirmDelete(item.id)}
-        >
-          {isPressedDelete ? <DeleteBtnHover /> : <DeleteBtn />}
-        </TouchableOpacity>
-        <Pressable
-          style={({ pressed }) => [
-          { opacity: pressed ? 0.5 : 1 },
-        ]}
-        onPress={()=>{handleIsComplete(item)}}
-        >
-          {item.isCompleted ? <Text style={styles.isCompleteIcon}>Done</Text> : <Text style={styles.isCompleteIcon}>Todo</Text>}
-        </Pressable>
-        </View>
+      ) : (
+        <FlatList
+          data={tasks}
+          renderItem={({item}) => (
+            <View style={styles.taskCardWrapper}>
+              <TouchableOpacity
+                onPress={() => {
+                  setExpandedTaskId(
+                    expandedTaskId === item.id ? null : item.id,
+                  );
+                }}>
+                <View style={styles.taskCard}>
+                  <View style={styles.titleAndAbout}>
+                    <Text
+                      style={[
+                        styles.taskTitle,
+                        item.isCompleted && {
+                          textDecorationLine: 'line-through',
+                          color: 'gray',
+                        },
+                      ]}>
+                      {item.title}
+                    </Text>
 
-      </View>
-        </TouchableOpacity>
-      {expandedTaskId === item.id && (
-               <View style={styles.taskActions}>
-               <TouchableOpacity
-                onPressIn={()=>setIsPressedShare(true)}
-                onPressOut={()=>setIsPressedShare(false)}
-                onPress={() => openShareModal(item)}
-               >
-                {isPressedShare ? <Share />: <ShareHover />}
-               </TouchableOpacity> 
+                    <Text
+                      style={[
+                        styles.taskAbout,
+                        item.isCompleted && {
+                          textDecorationLine: 'line-through',
+                          color: 'gray',
+                        },
+                      ]}>
+                      {item.about}
+                    </Text>
+                  </View>
+                  <View style={styles.taskCardButtonWrapper}>
+                    <TouchableOpacity
+                      onPressIn={() => setIsPressedDelete(true)}
+                      onPressOut={() => setIsPressedDelete(false)}
+                      onPress={() => confirmDelete(item.id)}>
+                      {isPressedDelete ? <DeleteBtnHover /> : <DeleteBtn />}
+                    </TouchableOpacity>
+                    <Pressable
+                      style={({pressed}) => [{opacity: pressed ? 0.5 : 1}]}
+                      onPress={() => {
+                        handleIsComplete(item);
+                      }}>
+                      {item.isCompleted ? (
+                        <Text style={styles.isCompleteIcon}>Done</Text>
+                      ) : (
+                        <Text style={styles.isCompleteIcon}>Todo</Text>
+                      )}
+                    </Pressable>
+                  </View>
+                </View>
+              </TouchableOpacity>
+              {expandedTaskId === item.id && (
+                <View style={styles.taskActions}>
+                  <TouchableOpacity
+                    onPressIn={() => setIsPressedShare(true)}
+                    onPressOut={() => setIsPressedShare(false)}
+                    onPress={() => openShareModal(item)}>
+                    {isPressedShare ? <Share /> : <ShareHover />}
+                  </TouchableOpacity>
 
-               <TouchableOpacity
-                onPressIn={()=>setIsPressedInfo(true)}
-                onPressOut={()=>setIsPressedInfo(false)}
-               >
-                {isPressedInfo ? <Info />: <InfoHover />}
-               </TouchableOpacity>
-               
-               <TouchableOpacity
-                onPressIn={()=>setIsPressedEdit(true)}
-                onPressOut={()=>setIsPressedEdit(false)}
-                onPress={()=> openEditModal(item)}
-               >
-                {isPressedEdit ? <Edit />: <EditHover />}
-               </TouchableOpacity>
-               
-             </View>
+                  <TouchableOpacity
+                    onPressIn={() => setIsPressedInfo(true)}
+                    onPressOut={() => setIsPressedInfo(false)}>
+                    {isPressedInfo ? <Info /> : <InfoHover />}
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPressIn={() => setIsPressedEdit(true)}
+                    onPressOut={() => setIsPressedEdit(false)}
+                    onPress={() => openEditModal(item)}>
+                    {isPressedEdit ? <Edit /> : <EditHover />}
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          )}
+          keyExtractor={item => item.id}
+          style={styles.taskCardList}
+        />
       )}
-      
-      </View>
 
-    )}
-    keyExtractor={item => item.id}
-    style={styles.taskCardList}
-  />
-)}
+      <Modal visible={deleteModalVisible} transparent animationType="fade">
+        <View style={styles.deletemodalOverlay}>
+          <View style={styles.deleteModalContainer}>
+            <Text style={styles.deleteModalText}>Delete this task?</Text>
+            <View style={styles.deleteButtonRow}>
+              <Pressable
+                style={({pressed}) => [
+                  styles.deleteModalButton,
+                  styles.deleteButtonConfirm,
+                  {opacity: pressed ? 0.2 : 1},
+                ]}
+                onPress={handleConfirmDelete}>
+                <Text style={styles.deleteButtonText}>Yes</Text>
+              </Pressable>
 
-<Modal visible={deleteModalVisible} transparent animationType="fade">
-  <View style={styles.deletemodalOverlay}>
-    <View style={styles.deleteModalContainer}>
-      <Text style={styles.deleteModalText}>Delete this task?</Text>
-      <View style={styles.deleteButtonRow}>
+              <Pressable
+                style={({pressed}) => [
+                  styles.deleteModalButton,
+                  {opacity: pressed ? 0.2 : 1},
+                ]}
+                onPress={() => setDeleteModalVisible(false)}>
+                <Text style={styles.deleteButtonText}>No</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
-      <Pressable 
-          style={({ pressed }) => [
-            styles.deleteModalButton, 
-            styles.deleteButtonConfirm,
-            { opacity: pressed ? 0.2 : 1 }
-          ]}
-          onPress={handleConfirmDelete}
-        >
-          <Text style={styles.deleteButtonText}>Yes</Text>
+      <Modal visible={editModalVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <TextInput
+              style={styles.editingTitle}
+              placeholder="Edit title..."
+              placeholderTextColor="#F0E3CA"
+              value={editTitle}
+              onChangeText={setEditTitle}
+            />
+            <TextInput
+              style={styles.editingAbout}
+              placeholder="Edit about..."
+              placeholderTextColor="#F0E3CA"
+              multiline
+              value={editAbout}
+              onChangeText={setEditAbout}
+            />
+            <View style={styles.buttonRow}>
+              <Pressable
+                style={styles.modalButton}
+                onPress={() => setEditModalVisible(false)}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </Pressable>
+              <Pressable style={styles.modalButton} onPress={handleSaveEdit}>
+                <Text style={styles.buttonText}>Save</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {isshareModalVisible ? (
+        <Pressable
+          onPress={() => setShareModalVisible(false)}
+          style={styles.shareIconsContainer}>
+          <View style={styles.shareicons}>
+            <Pressable
+              style={({pressed}) => [
+                styles.iconContainer,
+                {opacity: pressed ? 0.5 : 1},
+              ]}
+              onPress={() => {
+                if (selectedTask) handleCopyToClipboard(selectedTask);
+              }}>
+              <Copy width={21} height={21} />
+            </Pressable>
+            <Pressable
+              style={({pressed}) => [
+                styles.iconContainer,
+                {opacity: pressed ? 0.5 : 1},
+              ]}
+              onPress={() => {
+                if (selectedTask) shareToVK(selectedTask);
+              }}>
+              <Vk width={21} height={21} />
+            </Pressable>
+            <Pressable
+              style={({pressed}) => [
+                styles.iconContainer,
+                {opacity: pressed ? 0.5 : 1},
+              ]}
+              onPress={() => {
+                if (selectedTask) shareToTelegram(selectedTask);
+              }}>
+              <Tele width={21} height={21} />
+            </Pressable>
+            <Pressable
+              style={({pressed}) => [
+                styles.iconContainer,
+                {opacity: pressed ? 0.5 : 1},
+              ]}
+              onPress={() => {
+                if (selectedTask) shareToWhatsApp(selectedTask);
+              }}>
+              <Whatsapp width={21} height={21} />
+            </Pressable>
+            <Pressable
+              style={({pressed}) => [
+                styles.iconContainer,
+                {opacity: pressed ? 0.5 : 1},
+              ]}
+              onPress={() => {
+                if (selectedTask) shareToFacebook(selectedTask);
+              }}>
+              <Facebook width={21} height={21} />
+            </Pressable>
+          </View>
         </Pressable>
+      ) : null}
 
-        <Pressable 
-          style={({ pressed }) => [
-            styles.deleteModalButton,
-            { opacity: pressed ? 0.2 : 1 }
-          ]} 
-          onPress={() => setDeleteModalVisible(false)}
-        >
-          <Text style={styles.deleteButtonText}>No</Text>
-        </Pressable>
-
-      </View>
+      <Toast config={toastConfig} position="bottom" />
     </View>
-  </View>
-</Modal>
-
-<Modal visible={editModalVisible} transparent animationType="slide">
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContainer}>
-      <TextInput
-        style={styles.editingTitle}
-        placeholder='Edit title...'
-        placeholderTextColor="#F0E3CA"
-        value={editTitle}
-        onChangeText={setEditTitle}
-      />
-      <TextInput
-        style={styles.editingAbout}
-        placeholder='Edit about...'
-        placeholderTextColor="#F0E3CA"
-        multiline
-        value={editAbout}
-        onChangeText={setEditAbout}
-      />
-      <View style={styles.buttonRow}>
-      <Pressable style={styles.modalButton} onPress={() => setEditModalVisible(false)}>
-          <Text style={styles.buttonText}>Cancel</Text>
-        </Pressable>
-        <Pressable style={styles.modalButton}
-        onPress={handleSaveEdit}
-        >
-          <Text style={styles.buttonText}>Save</Text>
-        </Pressable>
-      </View>
-    </View>
-  </View>
-</Modal>
-{isshareModalVisible?<Pressable
-onPress={()=>setShareModalVisible(false)}
-style={styles.shareIconsContainer}>
-  <View style={styles.shareicons}>
-  <Pressable
-   style={({ pressed }) => [
-    styles.iconContainer,
-    { opacity: pressed ? 0.5 : 1 },
-  ]}
-   onPress={()=>{
-    if(selectedTask)
-    handleCopyToClipboard(selectedTask)
-  }}
-   ><Copy width={21} height={21} /></Pressable>
-  <Pressable   style={({ pressed }) => [
-    styles.iconContainer,
-    { opacity: pressed ? 0.5 : 1 },
-  ]}
-   onPress={() =>{
-    if(selectedTask)
-    shareToVK(selectedTask)  
-   }}
-  ><Vk width={21} height={21} /></Pressable>
-  <Pressable style={({ pressed }) => [
-    styles.iconContainer,
-    { opacity: pressed ? 0.5 : 1 },
-  ]}
-    onPress={() =>{
-      if(selectedTask)
-      shareToTelegram(selectedTask)  
-   }}
-  ><Tele width={21} height={21} /></Pressable>
-  <Pressable style={({ pressed }) => [
-    styles.iconContainer,
-    { opacity: pressed ? 0.5 : 1 },
-  ]}
-   onPress={() =>{
-      if(selectedTask)
-      shareToWhatsApp(selectedTask)  
-   }}
-  ><Whatsapp width={21} height={21} /></Pressable>
-  <Pressable style={({ pressed }) => [
-    styles.iconContainer,
-    { opacity: pressed ? 0.5 : 1 },
-  ]}
-    onPress={() =>{
-      if(selectedTask)
-      shareToFacebook(selectedTask)
-    }}
-  ><Facebook width={21} height={21} /></Pressable>
-  </View>
-
-</Pressable>:null}
-
-
-   
-<Toast config={toastConfig} position="bottom" />
-
-    </View>
-    
   );
 }
 
@@ -552,16 +539,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '100%',
-   
   },
 
-  inputParts:{
-
-    flex:1,
-    
-
+  inputParts: {
+    flex: 1,
   },
-  
+
   input: {
     backgroundColor: '#242320',
     borderColor: '#FF8303',
@@ -575,14 +558,11 @@ const styles = StyleSheet.create({
     color: 'rgba(240, 227, 202, 0.64)',
     paddingVertical: 8,
     marginRight: 12,
-    marginBottom:5,
+    marginBottom: 5,
   },
-  
-  
-
 
   addBtn: {
-    marginBottom:5,
+    marginBottom: 5,
   },
 
   taskCardList: {
@@ -594,14 +574,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 
-  taskCardButtonWrapper:{
-    display:'flex',
-    flexDirection:'row',
-    gap:5,
+  taskCardButtonWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 5,
   },
 
-  titleAndAbout:{
-     maxWidth:'60%'
+  titleAndAbout: {
+    maxWidth: '60%',
   },
 
   taskCard: {
@@ -612,9 +592,9 @@ const styles = StyleSheet.create({
     padding: 12,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom:10,
+    marginBottom: 10,
   },
 
   taskCardWrapper: {
@@ -641,16 +621,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     gap: 5,
-    marginBottom:10,
+    marginBottom: 10,
   },
-  
 
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    
   },
 
   modalContainer: {
@@ -658,7 +636,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#1B1A17',
     borderRadius: 8,
     padding: 18,
-    
   },
 
   editingTitle: {
@@ -751,16 +728,14 @@ const styles = StyleSheet.create({
     tintColor: '#F0E3CA',
   },
 
-  isCompleteIcon:{
-    color:'#F0E3CA',
-    fontWeight:900,
-    backgroundColor:'rgba(0,0,0,0.2)',
-    padding:6,
-    borderRadius:5,
+  isCompleteIcon: {
+    color: '#F0E3CA',
+    fontWeight: 900,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    padding: 6,
+    borderRadius: 5,
     borderColor: '#A35709',
-    borderWidth:2
-    
-
+    borderWidth: 2,
   },
 
   deletemodalOverlay: {
@@ -768,7 +743,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
 
   deleteModalContainer: {
@@ -777,21 +751,21 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 20,
     alignItems: 'center',
-    borderTopColor:'#A35709',
-    borderTopWidth:4,
+    borderTopColor: '#A35709',
+    borderTopWidth: 4,
   },
   deleteModalText: {
     color: '#F0E3CA',
     fontSize: 18,
     marginBottom: 20,
     textAlign: 'center',
-    paddingTop:20,
+    paddingTop: 20,
   },
   deleteButtonRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    paddingTop:20,
+    paddingTop: 20,
   },
   deleteModalButton: {
     paddingHorizontal: 20,
@@ -801,13 +775,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
   },
-  deleteButtonConfirm: {
-    
-  },
+  deleteButtonConfirm: {},
   deleteButtonText: {
     color: '#F0E3CA',
     fontSize: 16,
   },
-
 });
-
