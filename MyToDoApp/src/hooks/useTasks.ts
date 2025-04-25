@@ -1,4 +1,3 @@
-// src/hooks/useTasks.ts
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -7,6 +6,7 @@ interface Task {
   title: string;
   about: string;
   isCompleted: boolean;
+  createdAt: string;
 }
 
 interface TaskStore {
@@ -17,6 +17,8 @@ interface TaskStore {
   setEditModalVisible: (visible: boolean) => void;
   isShareModalVisible: boolean;
   setShareModalVisible: (visible: boolean) => void;
+  isInfoModelVisble: boolean;
+  setInfoModelVisible:(visible:boolean)=> void;
   selectedTaskId: string | null;
   setSelectedTaskId: (id: string | null) => void;
   addTask: (title: string, about: string) => void;
@@ -32,6 +34,7 @@ export const useTasks = create<TaskStore>((set) => ({
   isDeleteModalVisible: false,
   isEditModalVisible: false,
   isShareModalVisible: false,
+  isInfoModelVisble:false,
   selectedTaskId: null,
   
   
@@ -42,6 +45,8 @@ export const useTasks = create<TaskStore>((set) => ({
   setDeleteModalVisible: (visible) => set({ isDeleteModalVisible: visible }),
   setEditModalVisible: (visible) => set({ isEditModalVisible: visible }),
   setShareModalVisible: (visible) => set({ isShareModalVisible: visible }),
+
+  setInfoModelVisible: (visible) => set({ isInfoModelVisble: visible }),
 
   // Load tasks from AsyncStorage
   loadTasks: async () => {
@@ -61,6 +66,7 @@ export const useTasks = create<TaskStore>((set) => ({
         title: title.trim(),
         about: about.trim(),
         isCompleted: false,
+        createdAt: new Date().toISOString(),
       };
       const updatedTasks = [...state.tasks, newTask];
       AsyncStorage.setItem('tasks', JSON.stringify(updatedTasks));
