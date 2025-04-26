@@ -93,6 +93,36 @@ git push origin feature/AmazingFeature
 
 # Open a Pull Request
 ```
+---
+
+## 📦 Generate APK for Production
+
+**1. Navigate to the `android` directory:**
+
+```bash
+cd android
+```
+
+**2. (Optional) Clean the previous build:**
+
+```bash
+./gradlew clean
+```
+
+**3. Generate the release APK:**
+
+```bash
+./gradlew assembleRelease
+```
+
+**4. Find the APK at:**
+
+```
+android/app/build/outputs/apk/release/app-release.apk
+```
+
+---
+
 
 ---
 
@@ -100,7 +130,6 @@ git push origin feature/AmazingFeature
 
 👉 [Click here to watch the demo video](https://drive.google.com/file/d/1Q58_0auDpvY-i0W-lbvgpQ7NB9QrlVkK/view?usp=drive_link)
 
-g
 
 
 ## 🎨 Figma Design
