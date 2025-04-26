@@ -98,7 +98,7 @@ git push origin feature/AmazingFeature
 
 ## 🎥 Demo Video
 
-<video src="src/assets/demo.mp4" controls width="100%"></video>
+<video src="MyToDoApp/src/assets/ToDoApp-DemoVideo.mp4" controls width="100%"></video>
 
 
 ## 🎨 Figma Design
