@@ -128,7 +128,7 @@ android/app/build/outputs/apk/release/app-release.apk
 
 ## 🎥 Demo Video
 
-👉 [Click here to watch the demo video]()
+👉 [Click here to watch the demo video](https://drive.google.com/file/d/1Q58_0auDpvY-i0W-lbvgpQ7NB9QrlVkK/view?usp=sharing)
 
 
 
